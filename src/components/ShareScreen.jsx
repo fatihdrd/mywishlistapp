@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 const ShareScreen = () => {
   const [categories, setCategories] = useState([]); // Kategoriler backend'den geliyor
@@ -10,10 +10,12 @@ const ShareScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false); // Modal her zaman görünür olacak
   const [ogData, setOGData] = useState(null); // OG verilerini tutacak state
   const [loading, setLoading] = useState(true); // Yükleme durumu
-
   const route = useRoute();
+  const navigation = useNavigation(); // navigation objesine erişim
   const sharedData = route.params?.sharedData; // Paylaşılan veri buradan alınacak
-console.log("sharedscreen rendered");
+
+  console.log("sharedscreen rendered");
+
   // Open Graph verilerini almak için backend'e istek at
   useEffect(() => {
     if (sharedData?.text) {
@@ -22,7 +24,7 @@ console.log("sharedscreen rendered");
         .then(response => {
           setOGData(response.data); // Open Graph verilerini al
           setLoading(false); // Yükleme tamamlandı
-          console.log("ogdata"+response);
+          console.log("ogdata", response.data);
         })
         .catch(error => {
           console.error(error);
@@ -54,8 +56,9 @@ console.log("sharedscreen rendered");
 
     axios.post('http://192.168.1.47:8082/wishlist/add', payload)
       .then(response => {
-        alert('Başarıyla kaydedildi!');
+       // alert('Başarıyla kaydedildi!');
         setIsModalVisible(false); // Modalı kapat
+        navigation.navigate('HomePage'); // İşlem bittikten sonra HomePage'e dön
       })
       .catch(error => console.error(error));
   };
